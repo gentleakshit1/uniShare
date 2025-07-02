@@ -1,7 +1,7 @@
 from allauth.account.forms import SignupForm
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Resource
+from .models import UserProfile, Resource
 
 class UniversitySignupForm(SignupForm):
     phone = forms.CharField(
@@ -27,8 +27,9 @@ class UniversitySignupForm(SignupForm):
 
     def save(self, request):
         user = super().save(request)
-        # You can store the phone in user.profile later if needed
+        UserProfile.objects.create(user=user, phone=self.cleaned_data['phone'])
         return user
+
 
 
 class ResourceUploadForm(forms.ModelForm):
