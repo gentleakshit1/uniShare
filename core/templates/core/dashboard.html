@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">My Uploads</h2>
+
+{% if resources %}
+  <div class="row row-cols-1 row-cols-md-2 g-4">
+    {% for resource in resources %}
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ resource.title }}</h5>
+            <p class="card-text mb-1"><strong>Subject:</strong> {{ resource.subject }}</p>
+            <p class="card-text mb-3"><strong>Type:</strong> {{ resource.get_category_display }}</p>
+            <a href="{{ resource.file.url }}" class="btn btn-primary btn-sm me-2" download>Download</a>
+            <form action="{% url 'delete_resource' resource.id %}" method="post" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </div>
+          <div class="card-footer text-muted small">
+            Uploaded on {{ resource.created_at|date:"d M Y, H:i" }}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>You haven’t uploaded anything yet.</p>
+{% endif %}
+
+{% endblock %}
