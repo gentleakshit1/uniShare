@@ -12,10 +12,11 @@ class UniversitySignupForm(SignupForm):
     )
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if not email.endswith('@s.amity.edu'):
-            raise ValidationError("Please use your university email address.")
+        email = self.cleaned_data.get('email').lower()
+        if not email.endswith('.edu'):
+            raise ValidationError("Please use a university email ending in '.edu'.")
         return email
+
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
