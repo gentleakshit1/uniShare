@@ -53,15 +53,20 @@ class ResourceUploadForm(forms.ModelForm):
     def clean_file(self):
         file = self.cleaned_data.get('file')
 
-    # Only perform validation if it's a new uploaded file
         if hasattr(file, 'content_type'):
-            allowed_types = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-            max_size = 10 * 1024 * 1024  # 10 MB
+            allowed_types = [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'image/jpeg',
+            'image/png'
+            ]
+            max_size = 5 * 1024 * 1024  # 5 MB limit
 
             if file.content_type not in allowed_types:
-                raise forms.ValidationError("Only PDF or DOCX files are allowed.")
+                raise forms.ValidationError("Only PDF, DOCX, JPG or PNG files are allowed.")
 
             if file.size > max_size:
-                raise forms.ValidationError("File size must be under 10 MB.")
+                raise forms.ValidationError("File size must be under 5 MB for images.")
 
         return file
+
