@@ -37,29 +37,30 @@
   }
 
   .form-control,
-  .form-select,
-  textarea {
+  .form-select {
     border-radius: 0.5rem;
     font-size: 0.95rem;
-  }
-
-  textarea {
-    min-height: 80px;
-    resize: vertical;
   }
 
   input[list] {
     border-radius: 0.5rem;
   }
   @media (max-width: 576px) {
-  .upload-card {
-    padding: 1.5rem 1.2rem;
-  }
+    .upload-card {
+      padding: 1.5rem 1.2rem;
+    }
 
-  .upload-title {
-    font-size: 1.3rem;
+    .upload-title {
+      font-size: 1.3rem;
+    }
+    .form-label {
+      font-size: 1rem !important;
+    }
+    .form-control {
+      font-size: 1rem !important;
+      padding: 0.75rem 1rem !important;
+    }
   }
-}
 
 </style>
 
@@ -67,14 +68,41 @@
   <div class="upload-card">
     <h2 class="upload-title">📤 Upload a Resource</h2>
 
-<div class="alert alert-info small text-muted mb-4" style="font-size: 0.85rem;">
-  <strong>Note:</strong> For clarity, please use subject codes in the title. Examples: <code>ENG</code> for English, <code>HCP</code> for History & Culture of Punjab, <code>MATH</code> for Mathematics.
-</div>
-
+    <div class="alert alert-info small text-muted mb-4" style="font-size: 0.85rem;">
+      <strong>Note:</strong> For clarity, please use subject codes in the title. Examples: <code>ENG</code> for English, <code>HCP</code> for History & Culture of Punjab, <code>MATH</code> for Mathematics.
+    </div>
 
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
-      {{ form|crispy }}
+      <div class="mb-3">
+        <label for="{{ form.title.id_for_label }}" class="form-label fw-bold" style="font-size:1.08rem;">
+          {{ form.title.label }}*
+        </label>
+        {{ form.title|add_class:"form-control shadow-sm py-2 px-3 fw-bold" }}
+        {% if form.title.errors %}
+          <div class="text-danger small">{{ form.title.errors }}</div>
+        {% endif %}
+      </div>
+      <div class="mb-3">
+        {{ form.subject.label_tag }}{{ form.subject }}
+        {% if form.subject.errors %}<div class="text-danger small">{{ form.subject.errors }}</div>{% endif %}
+      </div>
+      <div class="mb-3">
+        {{ form.course.label_tag }}{{ form.course }}
+        {% if form.course.errors %}<div class="text-danger small">{{ form.course.errors }}</div>{% endif %}
+      </div>
+      <div class="mb-3">
+        {{ form.semester.label_tag }}{{ form.semester }}
+        {% if form.semester.errors %}<div class="text-danger small">{{ form.semester.errors }}</div>{% endif %}
+      </div>
+      <div class="mb-3">
+        {{ form.file.label_tag }}{{ form.file }}
+        {% if form.file.errors %}<div class="text-danger small">{{ form.file.errors }}</div>{% endif %}
+      </div>
+      <div class="mb-3">
+        {{ form.type.label_tag }}{{ form.type }}
+        {% if form.type.errors %}<div class="text-danger small">{{ form.type.errors }}</div>{% endif %}
+      </div>
       <div class="d-grid mt-3">
         <button type="submit" class="btn btn-upload btn-lg">Upload</button>
       </div>

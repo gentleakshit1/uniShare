@@ -11,11 +11,14 @@ class Resource(models.Model):
         ('other', 'Other'),
     ]
 
+    SEMESTER_CHOICES = [(str(i), f"Semester {i}") for i in range(1, 9)]
+
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
     file = models.FileField(upload_to='resources/')
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
+    course = models.CharField(max_length=100)
+    semester = models.CharField(max_length=10, choices=SEMESTER_CHOICES)
     subject = models.CharField(max_length=100)
+    type = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

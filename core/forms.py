@@ -34,7 +34,31 @@ class UniversitySignupForm(SignupForm):
 
 
 class ResourceUploadForm(forms.ModelForm):
+    course = forms.CharField(
+        label="Course*",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your course (e.g. B.Tech CSE)'
+        })
+    )
+    semester = forms.ChoiceField(
+        label="Semester*",
+        choices=[('', 'Select Semester')] + [(str(i), f"Semester {i}") for i in range(1, 9)],
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    type = forms.ChoiceField(
+        label="Type*",
+        choices=[
+            ('', 'Select Type'),
+            ('notes', 'Notes'),
+            ('paper', 'Previous Year Paper'),
+            ('assignment', 'Assignment'),
+            ('other', 'Other')
+        ],
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
     subject = forms.CharField(
+        label="Subject*",
         widget=forms.TextInput(attrs={
             'list': 'subject-list',
             'class': 'form-control',
@@ -44,7 +68,7 @@ class ResourceUploadForm(forms.ModelForm):
 
     class Meta:
         model = Resource
-        fields = ['title', 'description', 'file', 'category', 'subject']
+        fields = ['title', 'file', 'course', 'semester', 'subject', 'type']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,13 +77,12 @@ class ResourceUploadForm(forms.ModelForm):
 
     def clean_file(self):
         file = self.cleaned_data.get('file')
-
         if hasattr(file, 'content_type'):
             allowed_types = [
-            'application/pdf',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'image/jpeg',
-            'image/png'
+                'application/pdf',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'image/jpeg',
+                'image/png'
             ]
             max_size = 5 * 1024 * 1024  # 5 MB limit
 

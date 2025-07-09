@@ -6,263 +6,412 @@
   <title>Unishare</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <style>
-  :root {
-    --bg-color: #f9fafb;
-    --text-color: #1e293b;
-    --card-bg: #ffffff;
-    --card-footer-bg: #f1f5f9;
-    --footer-bg: #f8fafc;
-    --primary-color: #2563eb;
-    --primary-hover: #1d4ed8;
-    --danger-color: #ef4444;
-    --danger-hover: #dc2626;
-    --border-color: #d1d5db;
-    --link-color: #374151;
-    --link-hover: #2563eb;
-    --shadow-color: rgba(0, 0, 0, 0.08);
-  }
+    /* Define primary colors */
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #6b7280;
+      --accent-color: #ea580c;
+      --text-color: #1e293b;
+      --bg-color: #f9fafb;
+      --border-color: #d1d5db;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --code-bg: #edf2f7;
+      --card-bg: #ffffff;
+      --card-footer-bg: #f1f5f9;
+      --footer-bg: #f8fafc;
+      --link-color: #374151;
+      --link-hover: #2563eb;
+      --navbar-bg: #ffffff;
+    }
 
-  [data-theme="dark"] {
-    --bg-color: #0f172a;
-    --text-color: #f3f4f6;
-    --card-bg: #1e293b;
-    --card-footer-bg: #1e293b;
-    --footer-bg: #1e293b;
-    --primary-color: #3b82f6;
-    --primary-hover: #60a5fa;
-    --danger-color: #ef4444;
-    --danger-hover: #f87171;
-    --border-color: #475569;
-    --link-color: #cbd5e1;
-    --link-hover: #93c5fd;
-    --shadow-color: rgba(255, 255, 255, 0.05);
-  }
+    /* Dark mode */
+    [data-theme="dark"] {
+      --primary-color: #93c5fd;
+      --secondary-color: #9ca3af;
+      --accent-color: #f97316;
+      --text-color: #f3f4f6;
+      --bg-color: #111827;
+      --border-color: #4b5563;
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      --code-bg: #1f2937;
+      --card-bg: #1e293b;
+      --card-footer-bg: #1e293b;
+      --footer-bg: #1e293b;
+      --link-color: #cbd5e1;
+      --link-hover: #93c5fd;
+      --navbar-bg: #1e293b;
+    }
 
-  body {
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    font-family: 'Segoe UI', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .navbar-brand {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--link-color) !important;
-    transition: color 0.3s ease;
-  }
-
-  .navbar-brand:hover {
-    color: var(--link-hover) !important;
-    transform: scale(1.05);
-  }
-
-  .nav-link {
-    font-size: 1.05rem;
-    font-weight: 500;
-    color: var(--link-color) !important;
-    transition: color 0.3s ease, transform 0.2s ease;
-  }
-
-  .nav-link:hover {
-    color: var(--link-hover) !important;
-    transform: translateY(-2px);
-  }
-
-  .container {
-    flex: 1;
-  }
-
-  .card {
-    background-color: var(--card-bg);
-    border: none;
-    border-radius: 0.75rem;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: 0 14px 28px var(--shadow-color);
-  }
-
-  .card:hover {
-    transform: translateY(-6px);
-  }
-
-  .card-footer {
-    background-color: var(--card-footer-bg);
-    border-top: none;
-  }
-
-  .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    transition: background-color 0.2s ease;
-  }
-
-  .btn-primary:hover {
-    background-color: var(--primary-hover);
-    border-color: var(--primary-hover);
-  }
-
-  .btn-danger {
-    background-color: var(--danger-color);
-    border-color: var(--danger-color);
-  }
-
-  .btn-danger:hover {
-    background-color: var(--danger-hover);
-    border-color: var(--danger-hover);
-  }
-
-  h2 {
-    color: var(--text-color);
-    font-weight: 600;
-  }
-
-  .form-control,
-  .form-select {
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-color);
-    background-color: var(--card-bg);
-    color: var(--text-color);
-  }
-
-  .form-control::placeholder {
-    color: #9ca3af;
-  }
-
-  .pagination .page-link {
-    border-radius: 0.5rem;
-    color: var(--primary-color);
-  }
-
-  .pagination .page-link:hover {
-    background-color: #e0f2fe;
-  }
-
-  footer {
-    text-align: center;
-    font-size: 0.9rem;
-    color: var(--text-color);
-    background-color: var(--footer-bg);
-    padding: 1rem 0;
-  }
-
-  @media (max-width: 768px) {
-    form.nav-search-form {
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+      display: flex;
       flex-direction: column;
-      align-items: stretch;
     }
 
-    form.nav-search-form input,
-    form.nav-search-form select {
-      width: 100%;
-      margin-bottom: 0.5rem;
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 15px;
+      flex: 1;
     }
 
-    form.nav-search-form button {
-      width: 100%;
+    /* Navbar styles */
+    .navbar {
+      background-color: var(--navbar-bg) !important;
+      box-shadow: 0 2px 4px var(--shadow-color);
+      border-bottom: 1px solid var(--border-color);
     }
-  }
-</style>
 
+    .navbar-brand {
+      font-weight: bold;
+      color: var(--primary-color) !important;
+      font-size: 1.8rem;
+      transition: color 0.3s ease, transform 0.2s ease;
+    }
+
+    .navbar-brand:hover {
+      color: var(--accent-color) !important;
+      transform: scale(1.05);
+    }
+
+    .nav-link {
+      color: var(--text-color) !important;
+      font-weight: 500;
+      transition: color 0.3s ease, transform 0.2s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--primary-color) !important;
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+      color: white !important;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #1e40af !important;
+      border-color: #1e40af !important;
+      transform: translateY(-2px);
+    }
+
+    .btn-outline-primary {
+      color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+      background-color: transparent !important;
+      transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+      background-color: var(--primary-color) !important;
+      color: white !important;
+      transform: translateY(-2px);
+    }
+
+    /* Form styles */
+    .form-control {
+      border: 1px solid var(--border-color);
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .form-select {
+      border: 1px solid var(--border-color);
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    .form-control::placeholder {
+      color: var(--secondary-color);
+    }
+
+    /* Card styles */
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 2px 4px var(--shadow-color);
+      border-radius: 0.75rem;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+    }
+
+    .card-header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-color);
+    }
+
+    .card-footer {
+      background-color: var(--card-footer-bg);
+      border-top: 1px solid var(--border-color);
+      color: var(--text-color);
+    }
+
+    .list-group-item {
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Alert styles */
+    .alert {
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Footer styles */
+    .footer {
+      background-color: var(--footer-bg);
+      border-top: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 1rem 0;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    .footer a {
+      color: var(--link-color);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer a:hover {
+      color: var(--link-hover);
+      text-decoration: underline;
+    }
+
+    /* Code block styles */
+    pre {
+      background-color: var(--code-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+    }
+
+    /* Theme toggle button styles */
+    #theme-toggle {
+      background: transparent;
+      border: 2px solid var(--border-color);
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      font-size: 1.2rem;
+      color: var(--text-color);
+      margin-left: 0.5rem;
+      cursor: pointer;
+    }
+
+    #theme-toggle:hover {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px var(--shadow-color);
+    }
+
+    #theme-toggle:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+    }
+
+    /* Headings */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: var(--text-color);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      #theme-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+        margin-left: 0;
+        margin-top: 0.5rem;
+      }
+
+      .navbar-nav {
+        text-align: center;
+      }
+
+      .nav-item {
+        margin: 0.25rem 0;
+      }
+
+      .navbar-collapse {
+        border-top: 1px solid var(--border-color);
+        padding-top: 1rem;
+        margin-top: 1rem;
+      }
+
+      .form-select {
+        min-width: 100% !important;
+        margin-bottom: 0.5rem;
+      }
+
+      .d-flex.align-items-center.gap-2 {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .btn-outline-primary {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .container {
+        padding: 10px;
+      }
+
+      .navbar-brand {
+        font-size: 1.5rem;
+      }
+    }
+
+    [data-theme="dark"] body,
+    [data-theme="dark"] .text-dark,
+    [data-theme="dark"] .navbar-light .navbar-nav .nav-link,
+    [data-theme="dark"] .navbar-light .navbar-brand,
+    [data-theme="dark"] .card,
+    [data-theme="dark"] .card-header,
+    [data-theme="dark"] .card-footer,
+    [data-theme="dark"] .list-group-item,
+    [data-theme="dark"] .alert,
+    [data-theme="dark"] .footer,
+    [data-theme="dark"] .form-control,
+    [data-theme="dark"] .form-select,
+    [data-theme="dark"] pre {
+      color: var(--text-color) !important;
+      background-color: var(--bg-color) !important;
+      border-color: var(--border-color) !important;
+    }
+  </style>
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-light mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="/">Unishare</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-2">
+          {% if user.is_authenticated %}
+          <!-- Filter Dropdown before Dashboard -->
+          <li class="nav-item">
+            <form class="d-flex align-items-center gap-2" method="get" action="/">
+              <select name="category" class="form-select" style="min-width: 180px;">
+                <option value="">All Categories</option>
+                <option value="notes" {% if request.GET.category == 'notes' %}selected{% endif %}>Notes</option>
+                <option value="paper" {% if request.GET.category == 'paper' %}selected{% endif %}>Previous Year Paper</option>
+                <option value="assignment" {% if request.GET.category == 'assignment' %}selected{% endif %}>Assignment</option>
+                <option value="other" {% if request.GET.category == 'other' %}selected{% endif %}>Other</option>
+              </select>
+              <button class="btn btn-outline-primary" type="submit">Filter</button>
+            </form>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="/dashboard/">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="/upload/">Upload</a></li>
+          <li class="nav-item"><a class="nav-link" href="/accounts/logout/">Logout</a></li>
+          {% else %}
+          <li class="nav-item"><a class="nav-link" href="/accounts/login/">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/accounts/signup/">Signup</a></li>
+          {% endif %}
+
+          <!-- Theme Toggle Button -->
+          <li class="nav-item">
+            <button id="theme-toggle" class="btn" title="Toggle Theme" aria-label="Toggle dark/light theme">
+              🌙
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <div class="container">
-    <a class="navbar-brand" href="/">Unishare</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-        <div class="collapse navbar-collapse" id="navContent">
-  <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-2">
-    {% if user.is_authenticated %}
-      <!-- Filter Dropdown before Dashboard -->
-      <li class="nav-item">
-        <form class="d-flex align-items-center gap-2" method="get" action="/">
-          <select name="category" class="form-select" style="min-width: 180px;">
-            <option value="">All Categories</option>
-            <option value="notes" {% if request.GET.category == 'notes' %}selected{% endif %}>Notes</option>
-            <option value="paper" {% if request.GET.category == 'paper' %}selected{% endif %}>Previous Year Paper</option>
-            <option value="assignment" {% if request.GET.category == 'assignment' %}selected{% endif %}>Assignment</option>
-            <option value="other" {% if request.GET.category == 'other' %}selected{% endif %}>Other</option>
-          </select>
-          <button class="btn btn-outline-primary" type="submit">Filter</button>
-        </form>
-      </li>
-      <li class="nav-item"><a class="nav-link" href="/dashboard/">Dashboard</a></li>
-      <li class="nav-item"><a class="nav-link" href="/upload/">Upload</a></li>
-      <li class="nav-item"><a class="nav-link" href="/accounts/logout/">Logout</a></li>
-    {% else %}
-      <li class="nav-item"><a class="nav-link" href="/accounts/login/">Login</a></li>
-      <li class="nav-item"><a class="nav-link" href="/accounts/signup/">Signup</a></li>
-    {% endif %}
-    <!-- <li class="nav-item">
-  <button id="theme-toggle" class="btn btn-sm" title="Toggle Theme" style="font-size: 1.25rem;">
-    🌙
-  </button>
-</li> -->
-
-  </ul>
-</div>
-
-
-</nav>
-
-
-  <div class="container mb-5">
     {% if messages %}
-  <div class="container mt-3">
-    {% for message in messages %}
+    <div class="mt-3">
+      {% for message in messages %}
       <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
         {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-    {% endfor %}
-  </div>
-{% endif %}
-
-    {% if messages %}
-      <div class="mt-3">
-        {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        {% endfor %}
-      </div>
+      {% endfor %}
+    </div>
     {% endif %}
 
-    {% block content %}{% endblock %}
+    {% block content %}
+    <!-- Content will be placed here -->
+    {% endblock %}
   </div>
 
-  <footer>
-    Made with ❤️ & ☕ in Unishare
+  <footer class="footer">
+    <div class="container">
+      Made with ❤️ by <a href="https://www.linkedin.com/in/gentleakshit/" target="_blank" rel="noopener noreferrer">Akshit</a> - Sharing is Caring
+    </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-  const toggleBtn = document.getElementById('theme-toggle');
-  const root = document.documentElement;
+    const toggleBtn = document.getElementById('theme-toggle');
+    const root = document.documentElement;
 
-  function setTheme(mode) {
-    root.setAttribute('data-theme', mode);
-    localStorage.setItem('theme', mode);
-    toggleBtn.textContent = mode === 'dark' ? '🌞' : '🌙';
-  }
+    function setTheme(mode) {
+      root.setAttribute('data-theme', mode);
+      localStorage.setItem('theme', mode);
+      toggleBtn.textContent = mode === 'dark' ? '☀️' : '🌙';
+      toggleBtn.setAttribute('title', mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    }
 
-  // Load theme from localStorage
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  setTheme(savedTheme);
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
 
-  toggleBtn.addEventListener('click', () => {
-    const current = root.getAttribute('data-theme');
-    const next = current === 'light' ? 'dark' : 'light';
-    setTheme(next);
-  });
-</script>
-
+    toggleBtn.addEventListener('click', () => {
+      const current = root.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      setTheme(next);
+    });
+  </script>
 </body>
 
 </html>
