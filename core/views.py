@@ -28,8 +28,9 @@ def upload_resource(request):
             resource = form.save(commit=False)
             resource.uploaded_by = request.user
             resource.save()
-            messages.success(request, "Upload successful! ✅")
             return redirect('resource_list')
+        else:
+            print(form.errors)  # Add this line to see validation errors in your console
     else:
         form = ResourceUploadForm()
     return render(request, 'core/upload.html', {'form': form})
@@ -43,7 +44,7 @@ def resource_list(request):
         resources = resources.filter(title__icontains=query)
 
     if category:
-        resources = resources.filter(category=category)
+        resources = resources.filter(type=category)
 
     paginator = Paginator(resources, 6)  # 6 resources per page
     page = request.GET.get('page')

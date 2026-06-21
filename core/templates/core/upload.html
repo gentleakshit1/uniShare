@@ -53,9 +53,11 @@
     .upload-title {
       font-size: 1.3rem;
     }
+
     .form-label {
       font-size: 1rem !important;
     }
+
     .form-control {
       font-size: 1rem !important;
       padding: 0.75rem 1rem !important;
@@ -78,7 +80,7 @@
         <label for="{{ form.title.id_for_label }}" class="form-label fw-bold" style="font-size:1.08rem;">
           {{ form.title.label }}*
         </label>
-        {{ form.title|add_class:"form-control shadow-sm py-2 px-3 fw-bold" }}
+        {{ form.title }}
         {% if form.title.errors %}
           <div class="text-danger small">{{ form.title.errors }}</div>
         {% endif %}
@@ -104,15 +106,17 @@
         {% if form.type.errors %}<div class="text-danger small">{{ form.type.errors }}</div>{% endif %}
       </div>
       <div class="d-grid mt-3">
-        <button type="submit" class="btn btn-upload btn-lg">Upload</button>
+        <button type="submit" class="btn btn-upload btn-lg fw-bold">Upload</button>
       </div>
     </form>
 
     <!-- Subject suggestions (for datalist field) -->
     <datalist id="subject-list">
-      {% for subject in form.subject_suggestions %}
-        <option value="{{ subject }}">
-      {% endfor %}
+      {% if form.subject_suggestions %}
+        {% for subject in form.subject_suggestions %}
+          <option value="{{ subject }}">
+        {% endfor %}
+      {% endif %}
     </datalist>
   </div>
 </div>

@@ -26,14 +26,16 @@ from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Include our new REST API endpoints
+    path('api/', include('core.urls')),
+    
+    # Keeping old routes for reference, but we will rely on api/ mostly now
     path('accounts/', include('allauth.urls')),
     path('upload/', upload_resource, name='upload_resource'),
     path('', resource_list, name='resource_list'), 
     path('delete/<int:resource_id>/', delete_resource, name='delete_resource'),
     path('dashboard/', user_dashboard, name='user_dashboard'),
     path('resource/<int:resource_id>/edit/', views.edit_resource, name='edit_resource'),
-
-
 ]
 
 if settings.DEBUG:
