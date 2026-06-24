@@ -44,7 +44,7 @@ class ResourceViewSet(viewsets.ModelViewSet):
     serializer_class = ResourceSerializer
     # Only authenticated users can create/update/delete. Anyone can read.
     permission_classes = [IsAuthenticatedOrReadOnly]
-    parser_classes = [parsers.MultiPartParser, parsers.FormParser]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
 
     # Add advanced filtering capabilities
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
