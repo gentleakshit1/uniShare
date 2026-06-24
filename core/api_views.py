@@ -1,16 +1,23 @@
+import logging
 from rest_framework import viewsets, filters, parsers
+
+logger = logging.getLogger(__name__)
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
-from .models import Resource
-from .serializers import ResourceSerializer
-from rest_framework.permissions import AllowAny
+from .models import Resource, Service
+from .serializers import ResourceSerializer, ServiceSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import ValidationError
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Vote
 
 class ResourceViewSet(viewsets.ModelViewSet):
     queryset = Resource.objects.all().order_by('-created_at')
     serializer_class = ResourceSerializer
-    # Temporarily allow any access while we build the UI
-    permission_classes = [AllowAny]
+    # Only authenticated users can create/update/delete. Anyone can read.
+    permission_classes = [IsAuthenticatedOrReadOnly]
     parser_classes = [parsers.MultiPartParser, parsers.FormParser]
 
     # Add advanced filtering capabilities
@@ -20,13 +27,114 @@ class ResourceViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try:
-            # We will attach the real user later when auth is enabled.
-            # For now, we safely fetch the first user to satisfy the DB constraint
-            dummy_user = User.objects.first()
-            if not dummy_user:
-                raise ValidationError("No Superuser exists in the system to attach this upload to. Please run 'python manage.py createsuperuser'.")
-            
-            serializer.save(uploaded_by=dummy_user)
+            # We now have real Clerk Auth syncing the user to request.user!
+            serializer.save(uploaded_by=self.request.user)
         except Exception as e:
-            # Re-raise as a clean DRF validation error instead of crashing with 500
+            logger.error(f"Error creating resource: {str(e)}", exc_info=True)
+            raise ValidationError(str(e))
+
+    @action(detail=True, methods=['post'], permission_classes=[]) # Keep it open if we want to allow guests? No, let's use the class permission.
+    def download(self, request, pk=None):
+        try:
+            resource = self.get_object()
+            resource.downloads_count += 1
+            resource.save(update_fields=['downloads_count'])
+            return Response({'status': 'download tracked', 'downloads_count': resource.downloads_count})
+        except Exception as e:
+            logger.error(f"Error tracking download: {str(e)}", exc_info=True)
+            return Response({'error': 'Internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['get'])
+    def my_resources(self, request):
+        try:
+            user = request.user
+            if not user.is_authenticated:
+                return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            resources = Resource.objects.filter(uploaded_by=user).order_by('-created_at')
+            serializer = self.get_serializer(resources, many=True)
+            
+            # Calculate totals
+            from django.db.models import Sum
+            totals = resources.aggregate(
+                total_downloads=Sum('downloads_count'),
+                total_upvotes=Sum('upvotes')
+            )
+            
+            return Response({
+                'stats': {
+                    'total_uploads': resources.count(),
+                    'total_downloads': totals['total_downloads'] or 0,
+                    'total_upvotes': totals['total_upvotes'] or 0,
+                },
+                'resources': serializer.data
+            })
+        except Exception as e:
+            logger.error(f"Error in my_resources: {str(e)}", exc_info=True)
+            return Response({'error': 'Internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=['post'])
+    def vote(self, request, pk=None):
+        try:
+            user = request.user
+            if not user.is_authenticated:
+                return Response({'error': 'You must be logged in to vote.'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            vote_type = request.data.get('vote_type')
+            if vote_type not in ['UP', 'DOWN']:
+                return Response({'error': 'Invalid vote type. Must be UP or DOWN.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            resource = self.get_object()
+            
+            vote, created = Vote.objects.get_or_create(
+                user=user, resource=resource, 
+                defaults={'vote_type': vote_type}
+            )
+            
+            if not created:
+                if vote.vote_type != vote_type:
+                    # Switched vote
+                    if vote.vote_type == 'UP':
+                        resource.upvotes -= 1
+                        resource.downvotes += 1
+                    else:
+                        resource.downvotes -= 1
+                        resource.upvotes += 1
+                    vote.vote_type = vote_type
+                    vote.save()
+                    resource.save(update_fields=['upvotes', 'downvotes'])
+                else:
+                    # Same vote -> toggle off
+                    if vote.vote_type == 'UP':
+                        resource.upvotes -= 1
+                    else:
+                        resource.downvotes -= 1
+                    vote.delete()
+                    resource.save(update_fields=['upvotes', 'downvotes'])
+                    return Response({'status': 'vote removed', 'upvotes': resource.upvotes, 'downvotes': resource.downvotes})
+            else:
+                # New vote
+                if vote_type == 'UP':
+                    resource.upvotes += 1
+                else:
+                    resource.downvotes += 1
+                resource.save(update_fields=['upvotes', 'downvotes'])
+                
+            return Response({'status': 'vote recorded', 'upvotes': resource.upvotes, 'downvotes': resource.downvotes})
+        except Exception as e:
+            logger.error(f"Error recording vote: {str(e)}", exc_info=True)
+            return Response({'error': 'Internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ServiceViewSet(viewsets.ModelViewSet):
+    queryset = Service.objects.all().order_by('-created_at')
+    serializer_class = ServiceSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'description']
+
+    def perform_create(self, serializer):
+        try:
+            serializer.save(provider=self.request.user)
+        except Exception as e:
+            logger.error(f"Error creating service: {str(e)}", exc_info=True)
             raise ValidationError(str(e))

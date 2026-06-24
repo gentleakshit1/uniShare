@@ -1,7 +1,7 @@
 // Centralized API module for making requests to Django
 // This keeps our components clean and makes the code modular
 
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 // Dummy data fallback for UI designers when the backend is unreachable
 const MOCK_RESOURCES = [
@@ -37,14 +37,22 @@ const MOCK_RESOURCES = [
 /**
  * Fetches all resources from the backend, with optional search filtering
  */
-export async function fetchResources(searchQuery?: string) {
+export async function fetchResources(searchQuery?: string, token?: string | null) {
   try {
     let url = `${API_BASE}/resources/`;
     if (searchQuery) {
       url += `?search=${encodeURIComponent(searchQuery)}`;
     }
     
-    const res = await fetch(url, { cache: "no-store" });
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(url, { 
+      cache: "no-store",
+      headers
+    });
     
     if (!res.ok) {
       console.warn("Backend reachable but returned an error. Falling back to Mock Data for UI previews.");
@@ -61,12 +69,47 @@ export async function fetchResources(searchQuery?: string) {
 }
 
 /**
+ * Fetches a single resource by its ID
+ */
+export async function fetchResourceById(id: string, token?: string | null) {
+  try {
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(`${API_BASE}/resources/${id}/`, {
+      cache: "no-store",
+      headers
+    });
+    
+    if (!res.ok) {
+      throw new Error(`Failed to fetch resource: ${res.statusText}`);
+    }
+    
+    return await res.json();
+  } catch (error) {
+    console.error(`[API Error] fetchResourceById failed for id ${id}:`, error);
+    // Fallback to mock data if backend unreachable
+    const mock = MOCK_RESOURCES.find(r => r.id.toString() === id);
+    if (mock) return mock;
+    throw error;
+  }
+}
+
+/**
  * Uploads a new resource using FormData
  */
-export async function uploadResource(formData: FormData) {
+export async function uploadResource(formData: FormData, token?: string | null) {
   try {
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const res = await fetch(`${API_BASE}/resources/`, {
       method: "POST",
+      headers,
       body: formData,
     });
     
@@ -88,4 +131,68 @@ export async function uploadResource(formData: FormData) {
     // Rethrow to let the UI component handle displaying the error to the user
     throw new Error(error.message || "An unexpected error occurred during upload.");
   }
+}
+
+export async function voteResource(id: number, voteType: 'UP' | 'DOWN', token: string) {
+  const res = await fetch(`${API_BASE}/resources/${id}/vote/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ vote_type: voteType })
+  });
+  if (!res.ok) throw new Error("Failed to vote");
+  return await res.json();
+}
+
+export async function downloadResource(id: number) {
+  // Download tracking can be public or authenticated, we make it public for now
+  const res = await fetch(`${API_BASE}/resources/${id}/download/`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error("Failed to track download");
+  return await res.json();
+}
+
+export async function fetchMyResources(token: string) {
+  const res = await fetch(`${API_BASE}/resources/my_resources/`, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    },
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to load dashboard data");
+  return await res.json();
+}
+
+export async function fetchServices(searchQuery?: string) {
+  try {
+    let url = `${API_BASE}/services/`;
+    if (searchQuery) {
+      url += `?search=${encodeURIComponent(searchQuery)}`;
+    }
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to load services");
+    return await res.json();
+  } catch (error) {
+    console.error("Failed to fetch services", error);
+    return [];
+  }
+}
+
+export async function createService(serviceData: any, token: string) {
+  const res = await fetch(`${API_BASE}/services/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify(serviceData)
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(JSON.stringify(err));
+  }
+  return await res.json();
 }

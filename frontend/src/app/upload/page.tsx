@@ -20,6 +20,7 @@ export default function UploadPage() {
   const [semester, setSemester] = useState("");
   const [subject, setSubject] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [isAnonymous, setIsAnonymous] = useState(false);
 
   // 2. The function that runs when the user clicks Submit
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,6 +41,7 @@ export default function UploadPage() {
       formData.append("subject", subject);
       formData.append("type", "notes"); // Defaulting to notes for now
       formData.append("file", file);
+      formData.append("is_anonymous", isAnonymous.toString());
 
       // Call our modular API function
       await uploadResource(formData);
@@ -55,14 +57,14 @@ export default function UploadPage() {
     }
   };
   return (
-    <div className="min-h-screen bg-zinc-50 flex items-center justify-center pt-32 pb-12 px-4 relative">
-      <Link href="/" className="absolute top-28 left-8 flex items-center text-zinc-500 hover:text-zinc-900 transition-colors">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center pt-32 pb-12 px-4 relative transition-colors duration-500">
+      <Link href="/" className="absolute top-28 left-8 flex items-center text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
         <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
       </Link>
       
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 border border-zinc-100">
-        <h2 className="text-3xl font-extrabold text-zinc-900 mb-2 text-center">Share Knowledge</h2>
-        <p className="text-center text-zinc-500 mb-8">Upload a resource to help your peers.</p>
+      <div className="max-w-md w-full bg-white dark:bg-zinc-900 rounded-2xl shadow-xl p-8 border border-zinc-100 dark:border-zinc-800">
+        <h2 className="text-3xl font-extrabold text-zinc-900 dark:text-white mb-2 text-center">Share Knowledge</h2>
+        <p className="text-center text-zinc-500 dark:text-zinc-400 mb-8">Upload a resource to help your peers.</p>
         
         {/* Display meaningful error messages directly in the UI instead of annoying alerts */}
         {errorMessage && (
@@ -74,55 +76,68 @@ export default function UploadPage() {
 
         <form className="space-y-5" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label htmlFor="title" className="text-zinc-700 font-medium">Title</Label>
+            <Label htmlFor="title" className="text-zinc-700 dark:text-zinc-300 font-medium">Title</Label>
             <Input 
               id="title" 
               placeholder="e.g. Intro to CS Midterm 2023" 
-              className="bg-zinc-50" 
+              className="bg-zinc-50 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100" 
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="course" className="text-zinc-700 font-medium">Course</Label>
+              <Label htmlFor="course" className="text-zinc-700 dark:text-zinc-300 font-medium">Course</Label>
               <Input 
                 id="course" 
                 placeholder="e.g. CS101" 
-                className="bg-zinc-50" 
+                className="bg-zinc-50 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100" 
                 value={course}
                 onChange={(e) => setCourse(e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="semester" className="text-zinc-700 font-medium">Semester</Label>
+              <Label htmlFor="semester" className="text-zinc-700 dark:text-zinc-300 font-medium">Semester</Label>
               <Input 
                 id="semester" 
                 placeholder="e.g. 1" 
-                className="bg-zinc-50" 
+                className="bg-zinc-50 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100" 
                 value={semester}
                 onChange={(e) => setSemester(e.target.value)}
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="subject" className="text-zinc-700 font-medium">Subject</Label>
+            <Label htmlFor="subject" className="text-zinc-700 dark:text-zinc-300 font-medium">Subject</Label>
             <Input 
               id="subject" 
               placeholder="e.g. Data Structures" 
-              className="bg-zinc-50" 
+              className="bg-zinc-50 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100" 
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="file" className="text-zinc-700 font-medium">File (PDF/Image)</Label>
+            <Label htmlFor="file" className="text-zinc-700 dark:text-zinc-300 font-medium">File (PDF/Image)</Label>
             <Input 
               id="file" 
               type="file" 
-              className="cursor-pointer bg-zinc-50 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" 
+              className="cursor-pointer bg-zinc-50 dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-400 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50" 
               onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
             />
+          </div>
+
+          <div className="flex items-center space-x-2 pt-2">
+            <input 
+              type="checkbox" 
+              id="isAnonymous" 
+              checked={isAnonymous} 
+              onChange={(e) => setIsAnonymous(e.target.checked)} 
+              className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-blue-600 focus:ring-blue-600 dark:focus:ring-blue-500"
+            />
+            <Label htmlFor="isAnonymous" className="text-zinc-700 dark:text-zinc-300 font-medium cursor-pointer">
+              Upload Anonymously <span className="text-xs text-zinc-500 dark:text-zinc-500 font-normal ml-1 block sm:inline mt-1 sm:mt-0">(Your name will be hidden from the public)</span>
+            </Label>
           </div>
           <Button 
             type="submit" 
