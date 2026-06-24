@@ -55,8 +55,8 @@ export default function UploadPage() {
     }
   };
   return (
-    <div className="min-h-screen bg-zinc-50 flex items-center justify-center py-12 px-4 relative">
-      <Link href="/" className="absolute top-8 left-8 flex items-center text-zinc-500 hover:text-zinc-900 transition-colors">
+    <div className="min-h-screen bg-zinc-50 flex items-center justify-center pt-32 pb-12 px-4 relative">
+      <Link href="/" className="absolute top-28 left-8 flex items-center text-zinc-500 hover:text-zinc-900 transition-colors">
         <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
       </Link>
       

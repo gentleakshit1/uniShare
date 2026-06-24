@@ -27,7 +27,7 @@ export default async function Home() {
         </div>
         
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-zinc-900 mb-6 leading-tight max-w-4xl">
-          Aces your exams with <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">UniShare</span>
+          Elevate your learning with <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">UniShare</span>
         </h1>
         
         <p className="text-lg md:text-xl text-zinc-600 max-w-2xl mb-10 leading-relaxed">

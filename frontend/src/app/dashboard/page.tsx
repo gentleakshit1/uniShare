@@ -17,7 +17,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 p-8">
+    <div className="min-h-screen bg-zinc-50 p-8 pt-32">
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center justify-between mb-10">
           <div>
