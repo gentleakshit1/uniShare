@@ -59,11 +59,14 @@ class ResourceViewSet(viewsets.ModelViewSet):
             if uploaded_file:
                 file_bytes = uploaded_file.read()
                 file_base64 = base64.b64encode(file_bytes).decode('utf-8')
+                # Reset the file pointer just in case DRF tries to read it again
+                uploaded_file.seek(0)
             
-            # We now have real Clerk Auth syncing the user to request.user!
+            # We pass file=None to explicitly prevent Django from trying to upload to Cloudinary!
             serializer.save(
                 uploaded_by=self.request.user,
-                file_base64=file_base64
+                file_base64=file_base64,
+                file=None
             )
         except Exception as e:
             logger.error(f"Error creating resource: {str(e)}", exc_info=True)
