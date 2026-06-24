@@ -8,10 +8,36 @@ from .models import Resource, Service
 from .serializers import ResourceSerializer, ServiceSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.exceptions import ValidationError
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from django.utils import timezone
 from .models import Vote
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def sync_user(request):
+    try:
+        user = request.user
+        if not user.is_authenticated:
+            return Response({'error': 'Not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+        data = request.data
+        if 'first_name' in data:
+            user.first_name = data['first_name'][:150]
+        if 'last_name' in data:
+            user.last_name = data['last_name'][:150]
+        if 'email' in data:
+            user.email = data['email'][:254]
+            
+        # Update last login time
+        user.last_login = timezone.now()
+        user.save()
+        
+        return Response({'status': 'success'})
+    except Exception as e:
+        logger.error(f"Error syncing user: {str(e)}", exc_info=True)
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ResourceViewSet(viewsets.ModelViewSet):
     queryset = Resource.objects.all().order_by('-created_at')

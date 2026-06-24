@@ -20,6 +20,7 @@ class Resource(models.Model):
     subject = models.CharField(max_length=100)
     type = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    uploader_display_name = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     # Metrics & Marketplace fields

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from '@clerk/nextjs'
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { SyncUser } from "@/components/SyncUser";
 
 export default function RootLayout({
   children,
@@ -23,6 +24,7 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <body className={`${inter.className} antialiased bg-zinc-50`}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            <SyncUser />
             <Navbar />
             {children}
           </ThemeProvider>

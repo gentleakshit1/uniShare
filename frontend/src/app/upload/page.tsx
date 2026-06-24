@@ -8,11 +8,12 @@ import Link from "next/link";
 import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { uploadResource } from "@/lib/api";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 
 export default function UploadPage() {
   const router = useRouter();
   const { getToken } = useAuth();
+  const { user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   
@@ -46,6 +47,10 @@ export default function UploadPage() {
       formData.append("type", "notes"); // Defaulting to notes for now
       formData.append("file", file);
       formData.append("is_anonymous", isAnonymous.toString());
+      
+      // Send the actual Google name!
+      const displayName = user?.fullName || user?.username || "Anonymous User";
+      formData.append("uploader_display_name", displayName);
 
       // Call our modular API function with the authentication token
       await uploadResource(formData, token);
