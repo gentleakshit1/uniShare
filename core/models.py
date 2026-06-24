@@ -14,7 +14,8 @@ class Resource(models.Model):
     SEMESTER_CHOICES = [(str(i), f"Semester {i}") for i in range(1, 9)]
 
     title = models.CharField(max_length=255)
-    file = models.FileField(upload_to='resources/')
+    file = models.FileField(upload_to='resources/', null=True, blank=True)
+    file_base64 = models.TextField(null=True, blank=True, help_text="Stores the raw file data as Base64 to bypass Cloudinary restrictions")
     course = models.CharField(max_length=100)
     semester = models.CharField(max_length=10, choices=SEMESTER_CHOICES)
     subject = models.CharField(max_length=100)

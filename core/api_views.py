@@ -53,11 +53,45 @@ class ResourceViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         try:
+            import base64
+            uploaded_file = self.request.FILES.get('file')
+            file_base64 = None
+            if uploaded_file:
+                file_bytes = uploaded_file.read()
+                file_base64 = base64.b64encode(file_bytes).decode('utf-8')
+            
             # We now have real Clerk Auth syncing the user to request.user!
-            serializer.save(uploaded_by=self.request.user)
+            serializer.save(
+                uploaded_by=self.request.user,
+                file_base64=file_base64
+            )
         except Exception as e:
             logger.error(f"Error creating resource: {str(e)}", exc_info=True)
             raise ValidationError(str(e))
+
+    @action(detail=True, methods=['get'], permission_classes=[])
+    def download_file(self, request, pk=None):
+        try:
+            import base64
+            from django.http import HttpResponse
+            resource = self.get_object()
+            if not resource.file_base64:
+                return Response({'error': 'No file found in database'}, status=status.HTTP_404_NOT_FOUND)
+            
+            file_data = base64.b64decode(resource.file_base64)
+            # Default to PDF since that is our primary use case
+            response = HttpResponse(file_data, content_type='application/pdf')
+            # Inline will try to open in browser, attachment forces download
+            response['Content-Disposition'] = f'inline; filename="{resource.title}.pdf"'
+            
+            # Optionally track download here too
+            resource.downloads_count += 1
+            resource.save(update_fields=['downloads_count'])
+            
+            return response
+        except Exception as e:
+            logger.error(f"Error serving file: {str(e)}", exc_info=True)
+            return Response({'error': 'Internal server error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=True, methods=['post'], permission_classes=[]) # Keep it open if we want to allow guests? No, let's use the class permission.
     def download(self, request, pk=None):
