@@ -10,6 +10,7 @@ class ResourceSerializer(serializers.ModelSerializer):
     # This automatically fetches the uploader's username so we can display it on the frontend!
     uploaded_by_name = serializers.SerializerMethodField()
     preview_url = serializers.ReadOnlyField()
+    file = serializers.SerializerMethodField()
 
     class Meta:
         model = Resource
@@ -20,6 +21,19 @@ class ResourceSerializer(serializers.ModelSerializer):
             'downloads_count', 'upvotes', 'downvotes', 'is_for_sale', 'price', 'is_anonymous'
         ]
         read_only_fields = ['uploaded_by', 'created_at', 'downloads_count', 'upvotes', 'downvotes']
+
+    def get_file(self, obj):
+        if not obj.file:
+            return None
+        url = obj.file.url
+        # If Cloudinary dropped the extension, we restore it using the original filename
+        if '.' in obj.file.name:
+            ext = obj.file.name.split('.')[-1].lower()
+            if not url.endswith(f'.{ext}'):
+                # Append the extension to the Cloudinary URL so browsers know it's a PDF
+                url = f"{url}.{ext}"
+        # Ensure it always uses HTTPS
+        return url.replace('http://', 'https://')
 
     def get_uploaded_by_name(self, obj):
         if obj.is_anonymous:
