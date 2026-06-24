@@ -57,7 +57,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
               {/* Overlay Download Button for Quick Access */}
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <a 
-                  href={resource.file}
+                  href={resource.file_url || resource.file}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-white text-zinc-900 px-6 py-3 rounded-full font-bold flex items-center gap-2 hover:scale-105 transition-transform"
@@ -122,7 +122,7 @@ export default async function ResourceDetailPage({ params }: { params: Promise<{
 
                   {/* Main Action */}
                   <a 
-                    href={resource.file}
+                    href={resource.file_url || resource.file}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold flex items-center gap-2 transition-all hover:shadow-xl hover:shadow-blue-500/20 hover:-translate-y-1 w-full md:w-auto justify-center"

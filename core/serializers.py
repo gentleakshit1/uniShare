@@ -10,19 +10,19 @@ class ResourceSerializer(serializers.ModelSerializer):
     # This automatically fetches the uploader's username so we can display it on the frontend!
     uploaded_by_name = serializers.SerializerMethodField()
     preview_url = serializers.ReadOnlyField()
-    file = serializers.SerializerMethodField()
+    file_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Resource
         # We define exactly which fields the React app will be able to see and download
         fields = [
-            'id', 'title', 'file', 'preview_url', 'course', 'semester', 'subject', 'type', 
+            'id', 'title', 'file', 'file_url', 'preview_url', 'course', 'semester', 'subject', 'type', 
             'uploaded_by', 'uploaded_by_name', 'uploader_display_name', 'created_at',
             'downloads_count', 'upvotes', 'downvotes', 'is_for_sale', 'price', 'is_anonymous'
         ]
         read_only_fields = ['uploaded_by', 'created_at', 'downloads_count', 'upvotes', 'downvotes']
 
-    def get_file(self, obj):
+    def get_file_url(self, obj):
         if not obj.file:
             return None
         url = obj.file.url

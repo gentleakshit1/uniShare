@@ -125,7 +125,7 @@ export default function ResourceCard({ resource }: { resource: any }) {
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                window.open(resource.file, '_blank', 'noopener,noreferrer');
+                window.open(resource.file_url || resource.file, '_blank', 'noopener,noreferrer');
                 handleDownload(e);
               }}
               className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 transition-colors shadow-sm"
