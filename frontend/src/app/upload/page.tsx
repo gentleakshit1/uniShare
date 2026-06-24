@@ -8,9 +8,11 @@ import Link from "next/link";
 import { ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { uploadResource } from "@/lib/api";
+import { useAuth } from "@clerk/nextjs";
 
 export default function UploadPage() {
   const router = useRouter();
+  const { getToken } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   
@@ -34,6 +36,8 @@ export default function UploadPage() {
     setIsSubmitting(true);
 
     try {
+      const token = await getToken();
+      
       const formData = new FormData();
       formData.append("title", title);
       formData.append("course", course);
@@ -43,8 +47,8 @@ export default function UploadPage() {
       formData.append("file", file);
       formData.append("is_anonymous", isAnonymous.toString());
 
-      // Call our modular API function
-      await uploadResource(formData);
+      // Call our modular API function with the authentication token
+      await uploadResource(formData, token);
 
       // If no error was thrown, it succeeded!
       router.push("/dashboard");
