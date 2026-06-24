@@ -39,9 +39,12 @@ class Resource(models.Model):
         if not self.file:
             return None
         url = self.file.url
+        # Since we switched to RawMediaCloudinaryStorage to allow PDF downloads,
+        # Cloudinary can no longer generate .jpg thumbnails for raw PDFs.
+        # We will return the original URL, and the frontend will just render a generic PDF icon.
         if url.lower().endswith('.pdf'):
-            # Replace the .pdf extension with .jpg to get the Cloudinary PDF thumbnail
-            return url.rsplit('.', 1)[0] + '.jpg'
+            # Return a default PDF icon or None so the frontend uses its default fallback
+            return None
         return url
 
 
